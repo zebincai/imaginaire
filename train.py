@@ -9,7 +9,7 @@ from imaginaire.utils.cudnn import init_cudnn
 from imaginaire.utils.dataset import get_train_and_val_dataloader
 from imaginaire.utils.distributed import init_dist
 from imaginaire.utils.distributed import master_only_print as print
-from imaginaire.utils.gpu_affinity import set_affinity
+# from imaginaire.utils.gpu_affinity import set_affinity
 from imaginaire.utils.logging import init_logging, make_logging_dir
 from imaginaire.utils.trainer import (get_model_optimizer_and_scheduler,
                                       get_trainer, set_random_seed)
@@ -24,14 +24,14 @@ def parse_args():
     parser.add_argument('--seed', type=int, default=0, help='Random seed.')
     parser.add_argument('--local_rank', type=int, default=0)
     parser.add_argument('--single_gpu', action='store_true')
-    parser.add_argument('--num_workers', type=int)
+    parser.add_argument('--num_workers', type=int, default=2)
     args = parser.parse_args()
     return args
 
 
 def main():
     args = parse_args()
-    set_affinity(args.local_rank)
+    # set_affinity(args.local_rank)
     set_random_seed(args.seed, by_rank=True)
     cfg = Config(args.config)
 
@@ -71,7 +71,6 @@ def main():
         trainer.start_of_epoch(current_epoch)
         for it, data in enumerate(train_data_loader):
             data = trainer.start_of_iteration(data, current_iteration)
-
             for _ in range(cfg.trainer.dis_step):
                 trainer.dis_update(data)
             for _ in range(cfg.trainer.gen_step):

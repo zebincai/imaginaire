@@ -6,7 +6,7 @@ import math
 
 import torch
 from torch.utils.tensorboard import SummaryWriter
-from torch.utils.tensorboard.summary import hparams
+# from torch.utils.tensorboard.summary import hparams
 
 from apex import amp
 from imaginaire.utils.distributed import master_only
@@ -97,11 +97,11 @@ def add_hparams(hparam_dict=None, metric_dict=None):
     global LOG_WRITER
     lw = LOG_WRITER
 
-    exp, ssi, sei = hparams(hparam_dict, metric_dict)
-
-    lw.file_writer.add_summary(exp)
-    lw.file_writer.add_summary(ssi)
-    lw.file_writer.add_summary(sei)
+    # exp, ssi, sei = hparams(hparam_dict, metric_dict)
+    #
+    # lw.file_writer.add_summary(exp)
+    # lw.file_writer.add_summary(ssi)
+    # lw.file_writer.add_summary(sei)
 
 
 class Meter(object):

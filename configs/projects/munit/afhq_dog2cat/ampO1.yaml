@@ -51,6 +51,7 @@ dis_opt:
         type: constant
 gen:
     type: imaginaire.generators.munit
+    nonlinearity: "leakyrelu"
     latent_dim: 8
     num_filters: 64
     num_filters_mlp: 256

@@ -43,7 +43,7 @@ def _get_data_loader(cfg, dataset, batch_size, not_distributed=False,
     Return:
         (obj): Data loader.
     """
-    not_distributed = not_distributed or not dist.is_initialized()
+    # not_distributed = not_distributed or not dist.is_initialized()
     if not_distributed:
         sampler = None
     else:
@@ -72,8 +72,10 @@ def get_train_and_val_dataloader(cfg):
           - val_data_loader (obj): Val data loader.
     """
     train_dataset, val_dataset = _get_train_and_val_dataset_objects(cfg)
+    not_distributed = getattr(
+        cfg.data, 'train_data_loader_not_distributed', False)
     train_data_loader = _get_data_loader(
-        cfg, train_dataset, cfg.data.train.batch_size)
+        cfg, train_dataset, cfg.data.train.batch_size, not_distributed=not_distributed)
     not_distributed = getattr(
         cfg.data, 'val_data_loader_not_distributed', False)
     not_distributed = 'video' in cfg.data.type or not_distributed

@@ -67,6 +67,7 @@ def get_trainer(cfg, net_G, net_D=None,
 
 
 def get_model_optimizer_and_scheduler(cfg, seed=0):
+    amp.register_float_function(torch, 'sigmoid')
     r"""Return the networks, the optimizers, and the schedulers. We will
     first set the random seed to a fixed value so that each GPU copy will be
     initialized to have the same network weights. We will then use different

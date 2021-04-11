@@ -55,6 +55,8 @@ class BaseTrainer(object):
         if cfg.trainer.model_average:
             # Two wrappers (DDP + model average).
             self.net_G_module = self.net_G.module.module
+        elif not cfg.trainer.distribute:
+            self.net_G_module = self.net_G
         else:
             # One wrapper (DDP)
             self.net_G_module = self.net_G.module
