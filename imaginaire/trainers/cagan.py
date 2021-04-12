@@ -92,8 +92,9 @@ Conditional_Analogy_ICCV_2017_paper.pdf)
         self.gen_losses['g_fake'] = self.gen_basic_loss(g_fake_xij, yj)
         self.gen_losses['f_fake'] = self.gen_basic_loss(f_fake_xij, yi)
         self.gen_losses['cycle'] = self.criteria['clycle_loss'](f_fake_xij, xi)
-        self.gen_losses['id'] = torch.norm(g_fake_alpha, p=1) + torch.norm(f_fake_alpha, p=1)
+        # self.gen_losses['id'] = torch.norm(g_fake_alpha, p=1) + torch.norm(f_fake_alpha, p=1)
         loss_sum = self._get_total_loss(gen_forward=True)
+        # print("gen losses: {}, sum: {}".format(self.gen_losses, loss_sum))
         return loss_sum
 
     def dis_loss(self, xi, yi, xij, yj):
@@ -101,6 +102,7 @@ Conditional_Analogy_ICCV_2017_paper.pdf)
         self.dis_losses["fake"] = self.dis_basic_loss(xi, yj, is_pos=False) + \
                                   self.dis_basic_loss(xij, yj, is_pos=False)
         loss_sum = self._get_total_loss(gen_forward=False)
+        # print("dis losses: {}, sum: {}".format(self.dis_losses, loss_sum))
         return loss_sum
 
     def gen_forward(self, data):
@@ -139,8 +141,13 @@ Conditional_Analogy_ICCV_2017_paper.pdf)
             data (dict): The current batch.
         """
         with torch.no_grad():
-            g_fake_xij, g_fake_alpha,  g_fake_xij_temp = self.net_G(data)
-            vis_images = [g_fake_xij,]
+            xi, yi, yj = get_xi_yi_yj(data)
+            # generator forward
+            g_fake_xij, g_fake_alpha, g_fake_xij_temp = self.construct(xi, yi, yj)
+            g_fake_xij_ = g_fake_xij * 0.5 + 0.5
+            xi_ = xi * 0.5 + 0.5
+            yj_ = yj * 0.5 + 0.5
+            vis_images = [xi_, yj_, g_fake_xij_]
             return vis_images
 
     def _compute_fid(self):

@@ -146,11 +146,18 @@ class BaseTrainer(object):
         custom meters.
         """
         # Logs that are shared by all models.
+        # self._write_to_meters({'time/iteration': self.time_iteration,
+        #                        'time/epoch': self.time_epoch,
+        #                        'optim/gen_lr': self.sch_G.get_last_lr()[0],
+        #                        'optim/dis_lr': self.sch_D.get_last_lr()[0]},
+        #                       self.meters)
+
         self._write_to_meters({'time/iteration': self.time_iteration,
                                'time/epoch': self.time_epoch,
-                               'optim/gen_lr': self.sch_G.get_last_lr()[0],
-                               'optim/dis_lr': self.sch_D.get_last_lr()[0]},
+                               'optim/gen_lr': self.sch_G.get_lr()[0],
+                               'optim/dis_lr': self.sch_D.get_lr()[0]},
                               self.meters)
+        print("self.sch_G.get_lr(): {}".format(self.sch_G.get_lr()))
         # Logs for loss values. Different models have different losses.
         self._write_loss_meters()
         # Other custom logs.
@@ -370,6 +377,8 @@ class BaseTrainer(object):
             self.save_image(image_path, data)
         if current_iteration % self.cfg.logging_iter == 0:
             self._write_tensorboard()
+            print("gen loss: {}".format(self.gen_losses))
+            print("dis loss: {}".format(self.dis_losses))
 
     def end_of_epoch(self, data, current_epoch, current_iteration):
         r"""Things to do after an epoch.

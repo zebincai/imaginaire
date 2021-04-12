@@ -35,7 +35,7 @@ gen_opt:
 dis_opt:
     type: adam
     fused_opt: False
-    lr: 0.0004
+    lr: 0.0002
     adam_beta1: 0.5
     adam_beta2: 0.999
     lr_policy:
@@ -61,9 +61,9 @@ data:
     # Train dataset details.
     train:
         # Input LMDBs.
-        roots: D:/workspace/develop/imaginaire/dataset/lipMPV/train
+        roots: D:/workspace/dataset/LIP_MPV_256_192/MPV_256_192/processed2
         # Batch size per GPU.
-        batch_size: 2
+        batch_size: 16
         # Data augmentations to be performed in given order.
         augmentations:
             # First resize all inputs to this size.

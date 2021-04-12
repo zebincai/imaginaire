@@ -92,12 +92,15 @@ class Dataset(data.Dataset):
         yi_img = Image.open(yi_file).resize((self.width, self.height))
         yj_img = Image.open(yj_file).resize((self.width, self.height))
         if self.phase == 'train':
-            xi_img = Image.open(xi_file).resize((self.width + 30, self.height + 40))
+            xi_img = Image.open(xi_file).resize((self.width+5, self.height + 10))
             xi_img = self.transform(xi_img)
             xi_img, yi_img = self.join_random_flip(xi_img, yi_img)
             yj_img = self.random_flip(yj_img)
         else:
             xi_img = Image.open(xi_file).resize((self.width, self.height))
+        # xi_img.save("D:/workspace/output/cagan/image/{:0>8d}_xi.jpg".format(index))
+        # yi_img.save("D:/workspace/output/cagan/image/{:0>8d}_yi.jpg".format(index))
+        # yj_img.save("D:/workspace/output/cagan/image/{:0>8d}_yj.jpg".format(index))
         xi = self.normalize(xi_img)
         yi = self.normalize(yi_img)
         yj = self.normalize(yj_img)
@@ -113,3 +116,4 @@ if __name__ == "__main__":
     for index, data in enumerate(tempdataset):
         print(index)
         print(data.shape)
+        print(data)
