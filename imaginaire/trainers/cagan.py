@@ -55,6 +55,7 @@ Conditional_Analogy_ICCV_2017_paper.pdf)
         """
         self.criteria['gen_basic'] = nn.BCELoss()
         self.criteria['dis_basic'] = nn.BCELoss()
+        # self.criteria['dis_basic'] = nn.BCEWithLogitsLoss()
         self.criteria['clycle_loss'] = nn.L1Loss()
 
         for loss_name, loss_weight in cfg.trainer.loss_weight.__dict__.items():
@@ -117,7 +118,7 @@ Conditional_Analogy_ICCV_2017_paper.pdf)
         # generator cycle
         f_fake_xij, f_fake_alpha, f_fake_xij_temp = self.construct(g_fake_xij, yj, yi)
         # Compute total loss
-        total_loss = self.gen_loss(f_fake_xij, f_fake_xij, yi, yj, xi, g_fake_alpha, f_fake_alpha)
+        total_loss = self.gen_loss(g_fake_xij, f_fake_xij, yi, yj, xi, g_fake_alpha, f_fake_alpha)
         return total_loss
 
     def dis_forward(self, data):
@@ -147,7 +148,8 @@ Conditional_Analogy_ICCV_2017_paper.pdf)
             g_fake_xij_ = g_fake_xij * 0.5 + 0.5
             xi_ = xi * 0.5 + 0.5
             yj_ = yj * 0.5 + 0.5
-            vis_images = [xi_, yj_, g_fake_xij_]
+            alpha_images = torch.cat([g_fake_alpha, g_fake_alpha, g_fake_alpha], dim=1)
+            vis_images = [xi_, yj_, g_fake_xij_, alpha_images]
             return vis_images
 
     def _compute_fid(self):

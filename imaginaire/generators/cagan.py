@@ -38,10 +38,10 @@ class Generator(nn.Module):
         super(Generator, self).__init__()
         # input downsample
         nonlinearity = gen_cfg.nonlinearity
-        self.downsample1 = nn.Upsample(scale_factor=0.5, mode='bilinear')
-        self.downsample2 = nn.Upsample(scale_factor=0.25, mode='bilinear')
-        self.downsample3 = nn.Upsample(scale_factor=0.125, mode='bilinear')
-        self.downsample4 = nn.Upsample(scale_factor=0.0625, mode='bilinear')
+        self.downsample1 = nn.Upsample(scale_factor=0.5, mode='bilinear', align_corners=True)
+        self.downsample2 = nn.Upsample(scale_factor=0.25, mode='bilinear', align_corners=True)
+        self.downsample3 = nn.Upsample(scale_factor=0.125, mode='bilinear', align_corners=True)
+        self.downsample4 = nn.Upsample(scale_factor=0.0625, mode='bilinear', align_corners=True)
 
         conv_params = dict(kernel_size=3,
                            padding=1,
@@ -98,8 +98,9 @@ class Generator(nn.Module):
 
 
 if __name__ == "__main__":
-
-    gen = Generator()
+    from imaginaire.config import Config
+    cfg = Config("D:/workspace/develop/imaginaire/configs/projects/cagan/LipMPV/base.yaml")
+    gen = Generator(cfg.gen, cfg.data)
     batch = torch.randn((8, 9, 256, 192))
     y = gen(batch)
     print(y.shape)
