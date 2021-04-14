@@ -65,6 +65,7 @@ class Dataset(data.Dataset):
             transforms.ToTensor(),
             transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
         ])
+
         if self.phase == 'train':
             self.transform = transforms.Compose([
                 transforms.RandomCrop(size=(self.height, self.width)),

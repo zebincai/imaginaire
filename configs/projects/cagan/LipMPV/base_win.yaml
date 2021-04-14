@@ -61,9 +61,9 @@ data:
     # Train dataset details.
     train:
         # Input LMDBs.
-        roots: /opt/huawei/caizebin/workspace/cgan/processed2
+        roots: D:/workspace/dataset/LIP_MPV_256_192/MPV_256_192/processed2
         # Batch size per GPU.
-        batch_size: 32
+        batch_size: 16
         # Data augmentations to be performed in given order.
         augmentations:
             # First resize all inputs to this size.
@@ -73,7 +73,7 @@ data:
     # Val dataset details.
     val:
         # Input LMDBs.
-        roots: /opt/huawei/caizebin/workspace/cgan/processed2
+        roots: D:/workspace/develop/imaginaire/dataset/lipMPV/test
         # Batch size per GPU.
         batch_size: 1
         # If resize_h_w is not given, then it is assumed to be same as crop_h_w.
@@ -88,7 +88,7 @@ test_data:
     type: imaginaire.datasets.cagan
     # Validation dataset details.
     test:
-        roots: /opt/huawei/caizebin/workspace/cgan/processed2
+        roots: D:/workspace/develop/imaginaire/dataset/lipMPV/test
         # Batch size per GPU.
         batch_size: 1
         # If resize_h_w is not given, then it is assumed to be same as crop_h_w.

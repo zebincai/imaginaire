@@ -19,8 +19,9 @@ class UpscaleBlock(nn.Module):
         if self.use_act:
             self.activation = nn.LeakyReLU(negative_slope=0.2, inplace=True)
 
-    def forward(self, x):
+    def forward(self, x, x2):
         out = self.upsample(x)
+        out = torch.cat([out, x2], dim=1)
         out = self.conv(out)
         if self.use_norm:
             out = self.norm(out)
@@ -70,23 +71,35 @@ class Conv2dSame(nn.Module):
         return x
 
 
+# class Out_Branch(nn.Module):
+#     def __init__(self, nc_in, kernel_size=(4, 3)):
+#         super(Out_Branch, self).__init__()
+#         #self.conv = Conv2dSame(nc_in, 4, kernel_size, bias=False)
+#         self.conv = nn.Conv2d(nc_in, 4,  3, padding=1)
+#         self.sigmoid = nn.Sigmoid()
+#         self.tanh = nn.Tanh()
+#
+#     def forward(self, x):
+#         x = self.conv(x)
+#         alpha = x[:, 0:1, :, :]
+#         x_i_j = x[:, 1:, :, :]
+#         alpha = self.sigmoid(alpha)
+#         x_i_j = self.tanh(x_i_j)
+#         return torch.cat([alpha, x_i_j], 1)
+       
+        #return x
+
 class Out_Branch(nn.Module):
     def __init__(self, nc_in, kernel_size=(4, 3)):
         super(Out_Branch, self).__init__()
         #self.conv = Conv2dSame(nc_in, 4, kernel_size, bias=False)
-        #self.conv = nn.Conv2d(nc_in, 4,  3, padding=1)
-        self.sigmoid = nn.Sigmoid()
-        self.tanh = nn.Tanh()
+        self.conv = nn.Conv2d(nc_in, 4,  3, padding=1)
+        # self.sigmoid = nn.Sigmoid()
 
     def forward(self, x):
-        # x = self.conv(x)
-        alpha = x[:, 0:1, :, :]
-        x_i_j = x[:, 1:, :, :]
-        #alpha = self.sigmoid(alpha)
-        x_i_j = self.tanh(x_i_j)
-        return torch.cat([alpha, x_i_j], 1)
-       
-        #return x
+        out = self.conv(x)
+        # out = self.sigmoid(out)
+        return out
 
 
 class Generator(nn.Module):
@@ -119,11 +132,11 @@ class Generator(nn.Module):
         self.layer4 = Conv2dBlock(in_channels=256+6, out_channels=512, stride=2, **conv_params)
 
         # decoder
-        self.layer5 = UpscaleBlock(in_channels=512+6, out_channels=256)
-        self.layer6 = UpscaleBlock(in_channels=256*2 + 6, out_channels=128)
-        self.layer7 = UpscaleBlock(in_channels=128*2 + 6, out_channels=64)
-        self.layer8 = UpscaleBlock(in_channels=64*2 + 6, out_channels=4, use_norm=False, use_act=False)
-        self.outlayer = Out_Branch(nc_in=4)
+        self.layer5 = UpscaleBlock(in_channels=512+256+6+6, out_channels=256)
+        self.layer6 = UpscaleBlock(in_channels=256+128 + 6, out_channels=128)
+        self.layer7 = UpscaleBlock(in_channels=128+64 + 6, out_channels=64)
+        self.layer8 = UpscaleBlock(in_channels=64 +6, out_channels=64, use_norm=True, use_act=True)
+        self.outlayer = Out_Branch(nc_in=64)
 
     def forward(self, x):
         r"""Dummy Generator forward.
@@ -149,20 +162,20 @@ class Generator(nn.Module):
         x_en16 = torch.cat([x_en16, x_d16], dim=1)
 
         # decoder
-        x_de8 = self.layer5(x_en16)
-        x_de8 = torch.cat([x_de8, x_en8], dim=1)
-        x_de4 = self.layer6(x_de8)
-        x_de4 = torch.cat([x_de4, x_en4], dim=1)
-        x_de2 = self.layer7(x_de4)
-        x_de2 = torch.cat([x_de2, x_en2], dim=1)
-        out = self.layer8(x_de2)
+        x_de8 = self.layer5(x_en16, x_en8)
+        # x_de8 = torch.cat([x_de8, x_en8], dim=1)
+        x_de4 = self.layer6(x_de8, x_en4)
+        # x_de4 = torch.cat([x_de4, x_en4], dim=1)
+        x_de2 = self.layer7(x_de4, x_en2)
+        # x_de2 = torch.cat([x_de2, x_en2], dim=1)
+        out = self.layer8(x_de2, xi_yj)
         out = self.outlayer(out)
         return out
 
 
 if __name__ == "__main__":
     from imaginaire.config import Config
-    cfg = Config("D:/workspace/develop/imaginaire/configs/projects/cagan/LipMPV/base.yaml")
+    cfg = Config("/configs/projects/cagan/LipMPV/base_dis2_gen1.yaml")
     gen = Generator(cfg.gen, cfg.data)
     batch = torch.randn((8, 9, 256, 192))
     y = gen(batch)

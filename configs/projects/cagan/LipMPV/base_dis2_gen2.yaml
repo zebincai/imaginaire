@@ -41,11 +41,11 @@ dis_opt:
     lr_policy:
         type: constant
 gen:
-    type: imaginaire.generators.cagan
+    type: imaginaire.generators.cagan2
     nonlinearity: "leakyrelu"
 
 dis:
-    type: imaginaire.discriminators.cagan3
+    type: imaginaire.discriminators.cagan2
     nonlinearity: "leakyrelu"
 
 # Data options.

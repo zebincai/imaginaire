@@ -45,7 +45,7 @@ gen:
     nonlinearity: "leakyrelu"
 
 dis:
-    type: imaginaire.discriminators.cagan3
+    type: imaginaire.discriminators.cagan
     nonlinearity: "leakyrelu"
 
 # Data options.

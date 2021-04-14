@@ -158,6 +158,7 @@ Conditional_Analogy_ICCV_2017_paper.pdf)
         We will then report the mean of the FID values as the final
         performance number as described in the FUNIT paper.
         """
+        """
         self.net_G.eval()
         all_fid_values = []
         fid_path = self._get_save_path("valid", 'npy')
@@ -172,4 +173,5 @@ Conditional_Analogy_ICCV_2017_paper.pdf)
                 self.current_epoch, self.current_iteration, mean_fid))
             return mean_fid
         else:
-            return None
+            return None """
+        return None
